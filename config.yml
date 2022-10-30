@@ -1,0 +1,112 @@
+---
+
+- hosts: all
+  become: true
+  pre_tasks:
+
+  - name: install updates (Ubuntu)
+    tags: always
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+
+  - name: install update (CentOS)
+    tags: always
+    yum:
+      update_only: yes
+      update_cache: yes
+    when: ansible_distribution == "CentOS"
+
+- hosts: db_servers
+  name: Installing Nagios
+  become: true
+  tasks:
+
+  - name: Installing Nagios in UBUNTU
+    apt:
+      name:
+        - nagios4
+      state: latest
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+
+  - name: Installing Nagios in CentOS
+    yum:
+      name:
+        - nagios
+      state: latest
+      update_cache: yes
+    when: ansible_distribution == "CentOS"
+
+- hosts: web_servers
+  become: true
+  tasks:
+
+  - name: Install Elastic Stack in Ubuntu
+    apt:
+      name:
+        - elasticsearch
+        - kibana
+        - logstash
+      state: latest
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+
+  - name: Install Elastic stack in CentOS
+    yum:
+      name:
+        - elasticsearch
+        - kibana
+        - logstash
+      state: latest
+      update_cache: yes
+    when: ansible_distribution == "CentOS"
+
+- hosts: workstations
+  become: true
+  tasks:
+
+  - name: Install Grafana, Prometheus, Influxdb (Ubuntu)
+    apt:
+      name:
+        - influxdb
+        - prometheus
+        - grafana
+      state: latest
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+
+  - name: Install Grafana, Prometheus, Influxdb (CentOS)
+    yum:
+      name:
+        - influxdb
+        - prometheus
+        - grafana
+      state: latest
+      update_cache: yes
+    when: ansible_distribution == "CentOS"
+
+- hosts: file_servers
+  become: true
+  tasks:
+
+  - name: Install Lamp Stacks (Httpd + Php, Mariadb)
+    apt:
+      name:
+        - apache2
+        - libapache2-mod-php
+        - mariadb-server
+      state: latest
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+
+  - name: Install Lamp stacks (Httpd + Php, Mariadb)
+    dnf:
+      name:
+        - httpd
+        - php
+        - mariadb-server
+      state: latest
+      update_cache: yes
+    when: ansible_distribution == "CentOS"
